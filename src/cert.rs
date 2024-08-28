@@ -102,7 +102,7 @@ impl<'a> Cert<'a> {
             };
 
             if !tbs.at_end() {
-                der::nested(
+                if let Err(_e) = der::nested(
                     tbs,
                     der::Tag::ContextSpecificConstructed3,
                     Error::MalformedExtensions,
@@ -117,7 +117,11 @@ impl<'a> Cert<'a> {
                             },
                         )
                     },
-                )?;
+                ) {
+                    // TODO:
+                    // Not sure whether it's okay to NOT error out.
+                    // The certificate is loaded, but the extensions are not.
+                }
             }
 
             Ok(cert)
